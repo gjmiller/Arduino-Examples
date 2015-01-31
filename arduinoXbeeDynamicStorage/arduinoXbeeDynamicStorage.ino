@@ -60,11 +60,28 @@ void loop()
     stringArray[stringCount - 1] = (char *) malloc(21);
     // Get data out of the XBee response and store it in the last space of the
     // string holder.
-    memcpy(stringArray[stringCount - 1], rx16.getData(), 20);
+    char tempString[20];
+    // Init i up here instead of in the declaration of the for loop so it doesn't
+    // go out of scope when the loop terminates. This stores the last index of the
+    // C string and makes it easy to add the null terminator when the loop's done.
+    int i;
+    for(i = 0; i < rx16.getDataLength() && i < 20; i++)
+    {
+      tempString[i] = (char) rx16.getData(i);
+    }
+    tempString[i] = '\0';
+    strcpy(stringArray[stringCount - 1], tempString);
     // Print the new data from the array to make sure it was stored correctly
     // and that it can be retrieved successfully.
     Serial.println(stringArray[stringCount - 1]);
-    Serial.println();
+    Serial.println("===========");
+    // Print the entire array to make sure it's intact after the latest realloc
+    // and addition of the new string.
+    for (int i = 0; i < stringCount; i++)
+    {
+      Serial.println(stringArray[i]);
+    }
+    Serial.println("===========");
    }
    else
    {
